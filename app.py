@@ -1,5 +1,6 @@
 
 
+
 import streamlit as st
 import random
 import time
@@ -109,19 +110,20 @@ if "score" not in st.session_state:
         unsafe_allow_html=True
     )
 
+    
     if st.button("تأكيد" if is_ar else "Submit"):
         if answer and answer.startswith(current_note[1]):
-        st.markdown("✅" if is_ar else ":white_check_mark:")
-        st.session_state.correct_count += 1
             st.success("إجابة صحيحة!" if is_ar else "Correct!")
+            st.markdown("✅")
             st.session_state.score += 1
+            st.session_state.correct_count += 1
         else:
-        st.markdown("❌" if is_ar else ":x:")
-        st.session_state.wrong_count += 1
-        st.error(
+            st.error(
                 f"إجابة خاطئة! النغمة الصحيحة هي {current_note[1]} ({current_note[0]})"
                 if is_ar else f"Incorrect! The correct answer was {current_note[1]} ({current_note[0]})"
             )
+            st.markdown("❌")
+            st.session_state.wrong_count += 1
 
         st.session_state.round += 1
 
