@@ -44,7 +44,7 @@ if st.session_state.page == "welcome":
     if st.button(f"{texts['en']['start']} | {texts['ar']['start']}"):
         st.session_state.language = language
         st.session_state.page = "main"
-        st.experimental_rerun()
+        st.rerun()
 
 # التطبيق الأساسي
 elif st.session_state.page == "main":
