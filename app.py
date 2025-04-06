@@ -60,7 +60,12 @@ if st.session_state.language is not None:
         st.pyplot(fig)
 
     if "score" not in st.session_state:
+    st.session_state.round = 1
+    st.session_state.score = 0
+    st.session_state.start_time = time.time()
     st.session_state.correct_count = 0
+    st.session_state.wrong_count = 0
+st.session_state.correct_count = 0
     st.session_state.wrong_count = 0
         st.session_state.round = 1
         st.session_state.score = 0
