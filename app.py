@@ -23,6 +23,7 @@ texts = {
         "choose_note": "Choose the correct note name:",
         "correct": "Correct!",
         "incorrect": "Incorrect! The correct answer was",
+        "warning": "Please select an answer before continuing."
     },
     "ar": {
         "welcome": "مرحباً بك",
@@ -32,6 +33,7 @@ texts = {
         "choose_note": "اختر اسم النغمة الصحيحة:",
         "correct": "إجابة صحيحة!",
         "incorrect": "إجابة خاطئة! الجواب الصحيح هو",
+        "warning": "يرجى اختيار إجابة قبل المتابعة."
     }
 }
 
@@ -68,13 +70,9 @@ elif st.session_state.page == "main":
         st.session_state.total = 0
 
     st.image("Logo.PNG", width=150)
-    answer = st.radio(t['choose_note'], [f"{n[1]} ({n[0]})" for n in options], index=None)
+    st.title(f"{t['round']} {st.session_state.round}")
 
     correct_note = random.choice(notes)
-    options = random.sample(notes, 2)
-    if correct_note not in options:
-        options.append(correct_note)
-    random.shuffle(options)
 
     fig, ax = plt.subplots(figsize=(5, 1))
     ax.plot([0.5], [note_positions[correct_note[0]]], 'ro', markersize=12)
@@ -88,15 +86,26 @@ elif st.session_state.page == "main":
         ax.hlines(i, 0, 1, color='black')
     st.pyplot(fig)
 
-    answer = st.radio(t['choose_note'], [f"{n[1]} ({n[0]})" for n in options])
+    # إنشاء الخيارات عشوائيًا
+    options = random.sample(notes, 2)
+    if correct_note not in options:
+        options.append(correct_note)
+    random.shuffle(options)
+
+    # عرض الخيارات بدون اختيار افتراضي
+    answer = st.radio(t['choose_note'], [f"{n[1]} ({n[0]})" for n in options], index=None)
+
     if st.button(t['start']):
-        selected_note = answer.split("(")[-1].replace(")", "")
-        st.session_state.total += 1
-        if selected_note == correct_note[0]:
-            st.success(t["correct"])
-            st.session_state.score += 1
+        if answer:
+            selected_note = answer.split("(")[-1].replace(")", "")
+            st.session_state.total += 1
+            if selected_note == correct_note[0]:
+                st.success(t["correct"])
+                st.session_state.score += 1
+            else:
+                st.error(f"{t['incorrect']} {correct_note[1]} ({correct_note[0]})")
+            time.sleep(1)
+            st.session_state.round += 1
+            st.rerun()
         else:
-            st.error(f"{t['incorrect']} {correct_note[1]} ({correct_note[0]})")
-        time.sleep(1)
-        st.session_state.round += 1
-        st.rerun()
+            st.warning(t["warning"])
