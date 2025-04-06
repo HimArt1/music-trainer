@@ -9,18 +9,18 @@ st.set_page_config(page_title="Note Reading Trainer (G Clef)", layout="centered"
 
 # اختيار اللغة
 if "language" not in st.session_state:
-st.session_state.language = None
+    st.session_state.language = None
 
 if st.session_state.language is None:
-st.image("Logo.PNG", width=150)
-st.markdown("## Welcome | مرحباً بك")
-lang = st.radio("Choose Language | اختر اللغة", ["English", "العربية"])
+    st.image("Logo.PNG", width=150)
+    st.markdown("## Welcome | مرحباً بك")
+    lang = st.radio("Choose Language | اختر اللغة", ["English", "العربية"])
 if st.button("Start | ابدأ"):
-st.session_state.language = lang
-st.rerun()
-else:
-lang = st.session_state.language
-is_ar = lang == "العربية"
+    st.session_state.language = lang
+    st.rerun()
+    else:
+    lang = st.session_state.language
+    is_ar = lang == "العربية"
 
 st.image("Logo.PNG", width=150)
 st.title("مدرب قراءة النوتات (مفتاح صول)" if is_ar else "Note Reading Trainer (G Clef)")
@@ -49,21 +49,21 @@ ax.plot(2.5, note_positions[note], 'ro', markersize=12)
 st.pyplot(fig)
 
 if "score" not in st.session_state:
-st.session_state.round = 1
-st.session_state.score = 0
-st.session_state.start_time = time.time()
+    st.session_state.round = 1
+    st.session_state.score = 0
+    st.session_state.start_time = time.time()
 
 current_note = random.choice(notes)
 options = random.sample(notes, 2)
 if current_note not in options:
-options.append(current_note)
-else:
-options = list(set(options))
-while len(options) < 3:
-opt = random.choice(notes)
+    options.append(current_note)
+    else:
+    options = list(set(options))
+    while len(options) < 3:
+    opt = random.choice(notes)
 if opt not in options:
-options.append(opt)
-random.shuffle(options)
+    options.append(opt)
+    random.shuffle(options)
 
 st.markdown(f"### الجولة {st.session_state.round}" if is_ar else f"### Round {st.session_state.round}")
 draw_note(current_note[0])
@@ -95,20 +95,20 @@ padding: 8px 0;
 
 if st.button("تأكيد" if is_ar else "Submit"):
 if answer.startswith(current_note[1]):
-st.success("إجابة صحيحة!" if is_ar else "Correct!")
-st.session_state.score += 1
-else:
-st.error(f"إجابة خاطئة! النغمة الصحيحة هي {current_note[1]} ({current_note[0]})" if is_ar else f"Incorrect! The correct answer was {current_note[1]} ({current_note[0]})")
+    st.success("إجابة صحيحة!" if is_ar else "Correct!")
+    st.session_state.score += 1
+    else:
+    st.error(f"إجابة خاطئة! النغمة الصحيحة هي {current_note[1]} ({current_note[0]})" if is_ar else f"Incorrect! The correct answer was {current_note[1]} ({current_note[0]})")
 
 st.session_state.round += 1
 
 if st.session_state.round > 5:
-elapsed = int(time.time() - st.session_state.start_time)
-st.markdown("---")
-st.markdown("### النهاية" if is_ar else "### Game Over")
-st.markdown(f"النتيجة: {st.session_state.score}/5" if is_ar else f"Score: {st.session_state.score}/5")
-st.markdown(f"الوقت المستغرق: {elapsed} ثانية" if is_ar else f"Time taken: {elapsed} seconds")
+    elapsed = int(time.time() - st.session_state.start_time)
+    st.markdown("---")
+    st.markdown("### النهاية" if is_ar else "### Game Over")
+    st.markdown(f"النتيجة: {st.session_state.score}/5" if is_ar else f"Score: {st.session_state.score}/5")
+    st.markdown(f"الوقت المستغرق: {elapsed} ثانية" if is_ar else f"Time taken: {elapsed} seconds")
 if st.button("إعادة التشغيل" if is_ar else "Restart"):
-for key in list(st.session_state.keys()):
-del st.session_state[key]
-st.rerun()
+    for key in list(st.session_state.keys()):
+    del st.session_state[key]
+    st.rerun()
