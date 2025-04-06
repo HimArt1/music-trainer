@@ -82,7 +82,9 @@ if st.session_state.language is not None:
     draw_note(current_note[0])
 
     options_list = [f"{n[1]} ({n[0]})" for n in options]
-    answer = st.radio(
+    
+answer = st.radio(
+
         "اختر اسم النغمة الصحيحة:" if is_ar else "Choose the correct note name:",
         options_list,
         index=None,
@@ -107,7 +109,7 @@ if st.session_state.language is not None:
 
     st.markdown(f"✅ {st.session_state.correct_count}    ❌ {st.session_state.wrong_count}")
 
-    if st.button("تأكيد" if is_ar else "Submit"):
+    # التفاعل صار مباشر، لا نحتاج زر Submit
         if answer and answer.startswith(current_note[1]):
             st.success("إجابة صحيحة!" if is_ar else "Correct!")
             st.markdown("✅")
@@ -133,3 +135,22 @@ if st.session_state.language is not None:
                 for key in list(st.session_state.keys()):
                     del st.session_state[key]
                 st.rerun()
+
+
+if answer:
+    if answer.startswith(current_note[1]):
+        st.success("إجابة صحيحة!" if is_ar else "Correct!")
+        st.markdown("✅")
+        st.session_state.score += 1
+        st.session_state.correct_count += 1
+    else:
+        st.error(
+            f"إجابة خاطئة! النغمة الصحيحة هي {current_note[1]} ({current_note[0]})"
+            if is_ar else f"Incorrect! The correct answer was {current_note[1]} ({current_note[0]})"
+        )
+        st.markdown("❌")
+        st.session_state.wrong_count += 1
+
+    st.session_state.round += 1
+    st.rerun()
+
