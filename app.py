@@ -37,29 +37,16 @@ else:
         'F2': 4
     }
 
-    
-from matplotlib import pyplot as plt
-import matplotlib.image as mpimg
-
-def draw_note(note):
-    fig, ax = plt.subplots(figsize=(8, 2.5))
-    ax.set_xlim(-1, 6)
-    ax.set_ylim(-1, 5)
-    ax.axis('off')
-
-    # رسم خطوط المدرج الموسيقي
-    for i in range(5):
-        ax.hlines(i, 0, 5, color='black', linewidth=1.5)
-
-    # إدراج صورة مفتاح الصول
-    clef_img = mpimg.imread("Sol.png")  # اسم الصورة كما طلبت
-    ax.imshow(clef_img, aspect='auto', extent=(-0.8, 0.5, 0, 4.5), zorder=1)
-
-    # رسم النغمة كنقطة حمراء
-    ax.plot(2.5, note_positions[note], 'ro', markersize=14, zorder=2)
-
-    st.pyplot(fig)
-
+    def draw_note(note):
+        import matplotlib.pyplot as plt
+        fig, ax = plt.subplots(figsize=(5, 1))
+        ax.set_xlim(-1, 6)
+        ax.set_ylim(-1, 5)
+        ax.axis('off')
+        for i in range(5):
+            ax.hlines(i, 0, 5, color='black')
+        ax.plot(2.5, note_positions[note], 'ro', markersize=12)
+        st.pyplot(fig)
 
     if "score" not in st.session_state:
         st.session_state.round = 1
@@ -104,4 +91,4 @@ def draw_note(note):
             if st.button("إعادة التشغيل" if is_ar else "Restart"):
                 for key in list(st.session_state.keys()):
                     del st.session_state[key]
-                st.experimental_rerun()
+                st.rerun()
