@@ -63,7 +63,9 @@ if st.session_state.language is not None:
         st.session_state.current_question = 1
         st.session_state.total_rounds = 5
         st.session_state.questions_per_round = 5
-        st.session_state.show_feedback = False
+        st.session_state.feedback = None
+        st.session_state.last_note = None
+        st.session_state.last_answer = None
 
     if st.session_state.round > st.session_state.total_rounds:
         elapsed = int(time.time() - st.session_state.start_time)
@@ -78,50 +80,61 @@ if st.session_state.language is not None:
     else:
         st.markdown(f"### الجولة {st.session_state.round} - السؤال {st.session_state.current_question}" if is_ar else f"### Round {st.session_state.round} - Q{st.session_state.current_question}")
 
-        current_note = random.choice(notes)
-        options = random.sample(notes, 2)
-        if current_note not in options:
-            options.append(current_note)
+        if st.session_state.feedback is None:
+            current_note = random.choice(notes)
+            st.session_state.last_note = current_note
+            options = random.sample(notes, 2)
+            if current_note not in options:
+                options.append(current_note)
+            else:
+                options = list(set(options))
+            while len(options) < 3:
+                opt = random.choice(notes)
+                if opt not in options:
+                    options.append(opt)
+            random.shuffle(options)
+
+            draw_note(current_note[0])
+            options_list = [f"{n[1]} ({n[0]})" for n in options]
+            answer = st.radio(
+                "اختر اسم النغمة الصحيحة:" if is_ar else "Choose the correct note name:",
+                options_list,
+                index=None,
+                key=f"answer_q{st.session_state.round}_{st.session_state.current_question}"
+            )
+
+            if answer:
+                st.session_state.last_answer = answer
+                if answer.startswith(current_note[1]):
+                    st.session_state.score += 1
+                    st.session_state.correct_count += 1
+                    st.session_state.feedback = "correct"
+                else:
+                    st.session_state.wrong_count += 1
+                    st.session_state.feedback = "wrong"
+                st.rerun()
         else:
-            options = list(set(options))
-        while len(options) < 3:
-            opt = random.choice(notes)
-            if opt not in options:
-                options.append(opt)
-        random.shuffle(options)
-
-        draw_note(current_note[0])
-        options_list = [f"{n[1]} ({n[0]})" for n in options]
-        answer = st.radio(
-            "اختر اسم النغمة الصحيحة:" if is_ar else "Choose the correct note name:",
-            options_list,
-            index=None,
-            key=f"answer_q{st.session_state.round}_{st.session_state.current_question}"
-        )
-
-        if answer:
-            if answer.startswith(current_note[1]):
+            draw_note(st.session_state.last_note[0])
+            if st.session_state.feedback == "correct":
                 st.success("إجابة صحيحة!" if is_ar else "Correct!")
                 st.markdown("✅")
-                st.session_state.score += 1
-                st.session_state.correct_count += 1
             else:
                 st.error(
-                    f"إجابة خاطئة! النغمة الصحيحة هي {current_note[1]} ({current_note[0]})"
-                    if is_ar else f"Incorrect! The correct answer was {current_note[1]} ({current_note[0]})"
+                    f"إجابة خاطئة! النغمة الصحيحة هي {st.session_state.last_note[1]} ({st.session_state.last_note[0]})"
+                    if is_ar else f"Incorrect! The correct answer was {st.session_state.last_note[1]} ({st.session_state.last_note[0]})"
                 )
                 st.markdown("❌")
-                st.session_state.wrong_count += 1
 
             st.markdown(f"✅ {st.session_state.correct_count}    ❌ {st.session_state.wrong_count}")
+
             if st.session_state.current_question < st.session_state.questions_per_round:
                 if st.button("التالي" if is_ar else "Next"):
                     st.session_state.current_question += 1
-                    st.rerun()
             else:
                 if st.button("الجولة التالية" if is_ar else "Next Round"):
                     st.session_state.round += 1
                     st.session_state.current_question = 1
-                    st.rerun()
 
+            st.session_state.feedback = None
+            st.rerun()
 
