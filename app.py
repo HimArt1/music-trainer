@@ -8,14 +8,11 @@ import os
 from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
 
-# إعداد الصفحة
 st.set_page_config(page_title="Note Reading Trainer (G Clef)", layout="centered")
 
-# اختيار اللغة
 if "language" not in st.session_state:
     st.session_state.language = None
 
-# شاشة اختيار اللغة
 if st.session_state.language is None:
     st.image("Logo.PNG", width=150)
     st.markdown("## Welcome | مرحباً بك")
@@ -24,7 +21,6 @@ if st.session_state.language is None:
         st.session_state.language = lang
         st.rerun()
 
-# بعد اختيار اللغة
 if st.session_state.language is not None:
     lang = st.session_state.language
     is_ar = lang == "العربية"
@@ -56,101 +52,76 @@ if st.session_state.language is not None:
         ax.imshow(clef_img, aspect='auto', extent=(-0.8, 0.5, 0, 4.5), zorder=1)
 
         ax.plot(2.5, note_positions[note], 'ro', markersize=14, zorder=2)
-
         st.pyplot(fig)
 
     if "score" not in st.session_state:
         st.session_state.round = 1
         st.session_state.score = 0
-        st.session_state.start_time = time.time()
         st.session_state.correct_count = 0
         st.session_state.wrong_count = 0
+        st.session_state.start_time = time.time()
+        st.session_state.current_question = 1
+        st.session_state.total_rounds = 5
+        st.session_state.questions_per_round = 5
+        st.session_state.show_feedback = False
 
-    current_note = random.choice(notes)
-    options = random.sample(notes, 2)
-    if current_note not in options:
-        options.append(current_note)
+    if st.session_state.round > st.session_state.total_rounds:
+        elapsed = int(time.time() - st.session_state.start_time)
+        st.markdown("### النهاية" if is_ar else "### Game Over")
+        st.markdown(f"النتيجة: {st.session_state.score}/25")
+        st.markdown(f"✅ {st.session_state.correct_count}    ❌ {st.session_state.wrong_count}")
+        st.markdown(f"الوقت المستغرق: {elapsed} ثانية" if is_ar else f"Time taken: {elapsed} seconds")
+        if st.button("إعادة التشغيل" if is_ar else "Restart"):
+            for key in list(st.session_state.keys()):
+                del st.session_state[key]
+            st.rerun()
     else:
-        options = list(set(options))
-    while len(options) < 3:
-        opt = random.choice(notes)
-        if opt not in options:
-            options.append(opt)
-    random.shuffle(options)
+        st.markdown(f"### الجولة {st.session_state.round} - السؤال {st.session_state.current_question}" if is_ar else f"### Round {st.session_state.round} - Q{st.session_state.current_question}")
 
-    st.markdown(f"### الجولة {st.session_state.round}" if is_ar else f"### Round {st.session_state.round}")
-    draw_note(current_note[0])
-
-    options_list = [f"{n[1]} ({n[0]})" for n in options]
-    
-answer = st.radio(
-
-        "اختر اسم النغمة الصحيحة:" if is_ar else "Choose the correct note name:",
-        options_list,
-        index=None,
-    )
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    st.markdown(
-        '''
-        <style>
-        div.row-widget.stRadio > div {
-            flex-direction: column;
-        }
-        div.row-widget.stRadio > div > label {
-            font-size: 18px;
-            padding: 8px 0;
-        }
-        </style>
-        ''',
-        unsafe_allow_html=True
-    )
-
-    st.markdown(f"✅ {st.session_state.correct_count}    ❌ {st.session_state.wrong_count}")
-
-    # التفاعل صار مباشر، لا نحتاج زر Submit
-        if answer and answer.startswith(current_note[1]):
-            st.success("إجابة صحيحة!" if is_ar else "Correct!")
-            st.markdown("✅")
-            st.session_state.score += 1
-            st.session_state.correct_count += 1
+        current_note = random.choice(notes)
+        options = random.sample(notes, 2)
+        if current_note not in options:
+            options.append(current_note)
         else:
-            st.error(
-                f"إجابة خاطئة! النغمة الصحيحة هي {current_note[1]} ({current_note[0]})"
-                if is_ar else f"Incorrect! The correct answer was {current_note[1]} ({current_note[0]})"
-            )
-            st.markdown("❌")
-            st.session_state.wrong_count += 1
+            options = list(set(options))
+        while len(options) < 3:
+            opt = random.choice(notes)
+            if opt not in options:
+                options.append(opt)
+        random.shuffle(options)
 
-        st.session_state.round += 1
-
-        if st.session_state.round > 5:
-            elapsed = int(time.time() - st.session_state.start_time)
-            st.markdown("---")
-            st.markdown("### النهاية" if is_ar else "### Game Over")
-            st.markdown(f"النتيجة: {st.session_state.score}/5" if is_ar else f"Score: {st.session_state.score}/5")
-            st.markdown(f"الوقت المستغرق: {elapsed} ثانية" if is_ar else f"Time taken: {elapsed} seconds")
-            if st.button("إعادة التشغيل" if is_ar else "Restart"):
-                for key in list(st.session_state.keys()):
-                    del st.session_state[key]
-                st.rerun()
-
-
-if answer:
-    if answer.startswith(current_note[1]):
-        st.success("إجابة صحيحة!" if is_ar else "Correct!")
-        st.markdown("✅")
-        st.session_state.score += 1
-        st.session_state.correct_count += 1
-    else:
-        st.error(
-            f"إجابة خاطئة! النغمة الصحيحة هي {current_note[1]} ({current_note[0]})"
-            if is_ar else f"Incorrect! The correct answer was {current_note[1]} ({current_note[0]})"
+        draw_note(current_note[0])
+        options_list = [f"{n[1]} ({n[0]})" for n in options]
+        answer = st.radio(
+            "اختر اسم النغمة الصحيحة:" if is_ar else "Choose the correct note name:",
+            options_list,
+            index=None,
+            key=f"answer_q{st.session_state.round}_{st.session_state.current_question}"
         )
-        st.markdown("❌")
-        st.session_state.wrong_count += 1
 
-    st.session_state.round += 1
-    st.rerun()
+        if answer:
+            if answer.startswith(current_note[1]):
+                st.success("إجابة صحيحة!" if is_ar else "Correct!")
+                st.markdown("✅")
+                st.session_state.score += 1
+                st.session_state.correct_count += 1
+            else:
+                st.error(
+                    f"إجابة خاطئة! النغمة الصحيحة هي {current_note[1]} ({current_note[0]})"
+                    if is_ar else f"Incorrect! The correct answer was {current_note[1]} ({current_note[0]})"
+                )
+                st.markdown("❌")
+                st.session_state.wrong_count += 1
+
+            st.markdown(f"✅ {st.session_state.correct_count}    ❌ {st.session_state.wrong_count}")
+            if st.session_state.current_question < st.session_state.questions_per_round:
+                if st.button("التالي" if is_ar else "Next"):
+                    st.session_state.current_question += 1
+                    st.rerun()
+            else:
+                if st.button("الجولة التالية" if is_ar else "Next Round"):
+                    st.session_state.round += 1
+                    st.session_state.current_question = 1
+                    st.rerun()
+
 
