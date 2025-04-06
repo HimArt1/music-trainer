@@ -60,6 +60,8 @@ if st.session_state.language is not None:
         st.pyplot(fig)
 
     if "score" not in st.session_state:
+    st.session_state.correct_count = 0
+    st.session_state.wrong_count = 0
         st.session_state.round = 1
         st.session_state.score = 0
         st.session_state.start_time = time.time()
@@ -78,6 +80,8 @@ if st.session_state.language is not None:
 
     st.markdown(f"### الجولة {st.session_state.round}" if is_ar else f"### Round {st.session_state.round}")
     draw_note(current_note[0])
+
+    st.markdown(f"✅ {st.session_state.correct_count}    ❌ {st.session_state.wrong_count}")
 
     options_list = [f"{n[1]} ({n[0]})" for n in options]
     answer = st.radio(
@@ -105,10 +109,14 @@ if st.session_state.language is not None:
 
     if st.button("تأكيد" if is_ar else "Submit"):
         if answer and answer.startswith(current_note[1]):
+        st.markdown("✅" if is_ar else ":white_check_mark:")
+        st.session_state.correct_count += 1
             st.success("إجابة صحيحة!" if is_ar else "Correct!")
             st.session_state.score += 1
         else:
-            st.error(
+        st.markdown("❌" if is_ar else ":x:")
+        st.session_state.wrong_count += 1
+        st.error(
                 f"إجابة خاطئة! النغمة الصحيحة هي {current_note[1]} ({current_note[0]})"
                 if is_ar else f"Incorrect! The correct answer was {current_note[1]} ({current_note[0]})"
             )
