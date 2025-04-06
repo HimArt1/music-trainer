@@ -4,6 +4,8 @@ import random
 import time
 import matplotlib.pyplot as plt
 
+st.image("Logo.PNG", width=150)
+
 # إعداد الصفحة
 st.set_page_config(page_title="Note Reading Trainer", layout="centered")
 
