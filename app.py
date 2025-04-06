@@ -4,10 +4,10 @@ import random
 import time
 import matplotlib.pyplot as plt
 
-st.image("Logo.PNG", width=150)
-
 # إعداد الصفحة
 st.set_page_config(page_title="Note Reading Trainer", layout="centered")
+
+st.image("Logo.PNG", width=150)
 
 # تعريف النغمات ومواقعها على المدرج (مفتاح صول)
 notes = [
