@@ -32,10 +32,10 @@ if st.session_state.language is not None:
     st.image("Logo.PNG", width=150)
     st.title("مدرب قراءة النوتات (مفتاح صول)" if is_ar else "Note Reading Trainer (G Clef)")
 
+    
     notes = [
         ('E', 'Mi'), ('F', 'Fa'), ('G', 'Sol'), ('A', 'La'),
-        ('B', 'Si'), ('C', 'Do'), ('D', 'Re'), ('E2', 'Mi'),
-        ('F2', 'Fa')
+        ('B', 'Si'), ('C', 'Do'), ('D', 'Re'), ('E2', 'Mi'), ('F2', 'Fa')
     ]
 
     note_positions = {
@@ -43,6 +43,7 @@ if st.session_state.language is not None:
         'B': 2, 'C': 2.5, 'D': 3, 'E2': 3.5,
         'F2': 4
     }
+
 
     def draw_note(note):
         fig, ax = plt.subplots(figsize=(8, 2.5))
@@ -137,3 +138,4 @@ if "score" not in st.session_state:
                 for key in list(st.session_state.keys()):
                     del st.session_state[key]
                 st.rerun()
+
