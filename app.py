@@ -99,4 +99,4 @@ elif st.session_state.page == "main":
             st.error(f"{t['incorrect']} {correct_note[1]} ({correct_note[0]})")
         time.sleep(1)
         st.session_state.round += 1
-        st.experimental_rerun()
+        st.rerun()
