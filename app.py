@@ -68,10 +68,30 @@ else:
     st.markdown(f"### الجولة {st.session_state.round}" if is_ar else f"### Round {st.session_state.round}")
     draw_note(current_note[0])
 
-    answer = st.radio(
-        "اختر اسم النغمة الصحيحة:" if is_ar else "Choose the correct note name:",
-        [f"{n[1]} ({n[0]})" for n in options]
-    )
+    
+options_list = [f"{n[1]} ({n[0]})" for n in options]
+answer = st.radio(
+    "اختر اسم النغمة الصحيحة:" if is_ar else "Choose the correct note name:",
+    options_list,
+    index=None,
+)
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+st.markdown(
+    """
+    <style>
+    div.row-widget.stRadio > div {
+        flex-direction: column;
+    }
+    div.row-widget.stRadio > div > label {
+        font-size: 18px;
+        padding: 8px 0;
+    }
+    </style>
+    """, unsafe_allow_html=True
+)
+
 
     if st.button("تأكيد" if is_ar else "Submit"):
         if answer.startswith(current_note[1]):
