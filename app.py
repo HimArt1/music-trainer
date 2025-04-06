@@ -52,7 +52,7 @@ if st.session_state.language is not None:
         for i in range(5):
             ax.hlines(i, 0, 5, color='black', linewidth=1.5)
 
-        clef_img = mpimg.imread("Sol.png")
+        clef_img = mpimg.imread("Sol.PNG")
         ax.imshow(clef_img, aspect='auto', extent=(-0.8, 0.5, 0, 4.5), zorder=1)
 
         ax.plot(2.5, note_positions[note], 'ro', markersize=14, zorder=2)
