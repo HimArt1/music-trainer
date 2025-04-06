@@ -3,6 +3,8 @@ import streamlit as st
 import random
 import time
 import os
+from matplotlib import pyplot as plt
+import matplotlib.image as mpimg
 
 # إعداد الصفحة
 st.set_page_config(page_title="Note Reading Trainer (G Clef)", layout="centered")
@@ -15,11 +17,15 @@ if st.session_state.language is None:
     st.image("Logo.PNG", width=150)
     st.markdown("## Welcome | مرحباً بك")
     lang = st.radio("Choose Language | اختر اللغة", ["English", "العربية"])
-if st.button("Start | ابدأ"):
-    st.session_state.language = lang
-    st.rerun()
-    else:
+    if st.button("Start | ابدأ"):
+        st.session_state.language = lang
+        st.rerun()
+else:
     lang = st.session_state.language
+    is_ar = lang == "العربية"
+
+
+lang = st.session_state.language
     is_ar = lang == "العربية"
 
 st.image("Logo.PNG", width=150)
