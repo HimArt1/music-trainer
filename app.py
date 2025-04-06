@@ -7,57 +7,49 @@ import matplotlib.pyplot as plt
 # إعداد الصفحة
 st.set_page_config(page_title="Note Reading Trainer", layout="centered")
 
-# الشعار
-st.image("Logo.PNG", width=150)
+# تحديد حالة الجلسة
+if "page" not in st.session_state:
+    st.session_state.page = "welcome"
+if "language" not in st.session_state:
+    st.session_state.language = "en"
 
-# دعم اللغتين
-languages = {
+# القاموس اللغوي
+texts = {
     "en": {
         "welcome": "Welcome",
-        "choose_lang": "Choose Language",
+        "choose_language": "Choose Language",
         "start": "Start",
         "round": "Round",
-        "choose_answer": "Choose the correct note name:",
+        "choose_note": "Choose the correct note name:",
         "correct": "Correct!",
         "incorrect": "Incorrect! The correct answer was",
-        "score": "Your score is",
-        "restart": "Restart",
     },
     "ar": {
         "welcome": "مرحباً بك",
-        "choose_lang": "اختر اللغة",
+        "choose_language": "اختر اللغة",
         "start": "ابدأ",
         "round": "الجولة",
-        "choose_answer": "اختر اسم النغمة الصحيحة:",
+        "choose_note": "اختر اسم النغمة الصحيحة:",
         "correct": "إجابة صحيحة!",
-        "incorrect": "إجابة خاطئة! النغمة الصحيحة كانت",
-        "score": "درجتك هي",
-        "restart": "أعد المحاولة",
+        "incorrect": "إجابة خاطئة! الجواب الصحيح هو",
     }
 }
 
-if "language" not in st.session_state:
-    st.session_state.language = None
-if "started" not in st.session_state:
-    st.session_state.started = False
-if "score" not in st.session_state:
-    st.session_state.score = 0
-if "round" not in st.session_state:
-    st.session_state.round = 1
-
 # واجهة البداية
-if not st.session_state.started:
-    st.markdown(f"## {languages['en']['welcome']} | {languages['ar']['welcome']}")
-    lang_choice = st.radio(f"{languages['en']['choose_lang']} | {languages['ar']['choose_lang']}", ["English", "العربية"])
-    st.session_state.language = "en" if lang_choice == "English" else "ar"
-    if st.button(f"{languages['en']['start']} | {languages['ar']['start']}"):
-        st.session_state.started = True
+if st.session_state.page == "welcome":
+    st.image("Logo.PNG", width=150)
+    st.markdown(f"## {texts['en']['welcome']} | {texts['ar']['welcome']}")
+    language = st.radio(f"{texts['en']['choose_language']} | {texts['ar']['choose_language']}",
+                        ["en", "ar"], index=0)
+    if st.button(f"{texts['en']['start']} | {texts['ar']['start']}"):
+        st.session_state.language = language
+        st.session_state.page = "main"
         st.experimental_rerun()
 
-# المتغيرات بعد البدء
-if st.session_state.started:
+# التطبيق الأساسي
+elif st.session_state.page == "main":
     lang = st.session_state.language
-    text = languages[lang]
+    t = texts[lang]
 
     notes = [
         ('E', 'Mi'), ('F', 'Fa'), ('G', 'Sol'),
@@ -66,35 +58,45 @@ if st.session_state.started:
     ]
 
     note_positions = {
-        'E': 0, 'F': 0.5, 'G': 1, 'A': 1.5, 'B': 2,
-        'C': 2.5, 'D': 3, 'E2': 3.5, 'F2': 4
+        'E': 0, 'F': 0.5, 'G': 1, 'A': 1.5,
+        'B': 2, 'C': 2.5, 'D': 3, 'E2': 3.5, 'F2': 4
     }
 
-    note, solfege = random.choice(notes)
-    st.markdown(f"### {text['round']} {st.session_state.round}")
+    if "round" not in st.session_state:
+        st.session_state.round = 1
+        st.session_state.score = 0
+        st.session_state.total = 0
+
+    st.image("Logo.PNG", width=150)
+    st.title(f"{t['round']} {st.session_state.round}")
+
+    correct_note = random.choice(notes)
+    options = random.sample(notes, 2)
+    if correct_note not in options:
+        options.append(correct_note)
+    random.shuffle(options)
 
     fig, ax = plt.subplots(figsize=(5, 1))
-    ax.set_xlim(-1, 9)
+    ax.plot([0.5], [note_positions[correct_note[0]]], 'ro', markersize=12)
+    ax.set_xlim(0, 1)
     ax.set_ylim(-1, 5)
-    ax.set_axis_off()
+    ax.set_xticks([])
+    ax.set_yticks(range(5))
+    ax.set_yticklabels([])
+    ax.grid(False)
     for i in range(5):
-        ax.hlines(i, 0, 8, color='black')
-    y_pos = note_positions[note]
-    ax.plot(4, y_pos, 'ro', markersize=12)
+        ax.hlines(i, 0, 1, color='black')
     st.pyplot(fig)
 
-    options = random.sample(notes, 2)
-    options.append((note, solfege))
-    random.shuffle(options)
-    choice = st.radio(text["choose_answer"], [f"{s} ({n})" for n, s in options], key=f"choice_{st.session_state.round}")
-
-    if st.button("Submit"):
-        selected_note = [n for n, s in options if f"{s} ({n})" == choice][0]
-        if selected_note == note:
-            st.success(text["correct"])
+    answer = st.radio(t['choose_note'], [f"{n[1]} ({n[0]})" for n in options])
+    if st.button(t['start']):
+        selected_note = answer.split("(")[-1].replace(")", "")
+        st.session_state.total += 1
+        if selected_note == correct_note[0]:
+            st.success(t["correct"])
             st.session_state.score += 1
         else:
-            st.error(f"{text['incorrect']} {solfege} ({note})")
+            st.error(f"{t['incorrect']} {correct_note[1]} ({correct_note[0]})")
+        time.sleep(1)
         st.session_state.round += 1
-        time.sleep(1.5)
         st.experimental_rerun()
