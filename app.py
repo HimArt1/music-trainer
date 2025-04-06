@@ -68,7 +68,7 @@ elif st.session_state.page == "main":
         st.session_state.total = 0
 
     st.image("Logo.PNG", width=150)
-    st.title(f"{t['round']} {st.session_state.round}")
+    st.radio(t['choose_note'], [f"{n[1]} ({n[0]})" for n in options], index=None)
 
     correct_note = random.choice(notes)
     options = random.sample(notes, 2)
