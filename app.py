@@ -17,7 +17,7 @@ if st.session_state.language is None:
     lang = st.radio("Choose Language | اختر اللغة", ["English", "العربية"])
     if st.button("Start | ابدأ"):
         st.session_state.language = lang
-        st.experimental_rerun()
+        st.rerun()
 else:
     lang = st.session_state.language
     is_ar = lang == "العربية"
