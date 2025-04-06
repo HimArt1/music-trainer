@@ -14,6 +14,7 @@ st.set_page_config(page_title="Note Reading Trainer (G Clef)", layout="centered"
 if "language" not in st.session_state:
     st.session_state.language = None
 
+# شاشة اختيار اللغة
 if st.session_state.language is None:
     st.image("Logo.PNG", width=150)
     st.markdown("## Welcome | مرحباً بك")
@@ -21,13 +22,9 @@ if st.session_state.language is None:
     if st.button("Start | ابدأ"):
         st.session_state.language = lang
         st.rerun()
-else:
-    lang = st.session_state.language
-    is_ar = lang == "العربية"
 
-
-
-else:
+# بعد اختيار اللغة
+if st.session_state.language is not None:
     lang = st.session_state.language
     is_ar = lang == "العربية"
 
