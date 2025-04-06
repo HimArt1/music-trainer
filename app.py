@@ -109,7 +109,7 @@ if st.session_state.language is not None:
                 else:
                     st.session_state.feedback = "wrong"
                     st.session_state.wrong_count += 1
-                st.experimental_rerun()
+                st.rerun()
         else:
             if st.session_state.feedback == "correct":
                 st.success("إجابة صحيحة!" if is_ar else "Correct!")
@@ -132,4 +132,4 @@ if st.session_state.language is not None:
                 st.session_state.last_note = None
                 st.session_state.last_answer = None
                 st.session_state.options = []
-                st.experimental_rerun()
+                st.rerun()
